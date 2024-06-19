@@ -23,9 +23,9 @@ pipeline {
                     agent any
                     steps {
                         sh '''
-                        docker pull maven:3-alpine --platform linux/arm64
-                        docker run --rm --platform linux/arm64 -v /root/.m2:/root/.m2 -v $(pwd):/workspace -w /workspace maven:3-alpine mvn -B -DskipTests clean package
-                        docker run --rm --platform linux/arm64 -v /root/.m2:/root/.m2 -v $(pwd):/workspace -w /workspace maven:3-alpine mvn test
+                        docker pull arm64v8/maven
+                        docker run --rm -v /root/.m2:/root/.m2 -v $(pwd):/workspace -w /workspace arm64v8/maven mvn -B -DskipTests clean package
+                        docker run --rm -v /root/.m2:/root/.m2 -v $(pwd):/workspace -w /workspace arm64v8/maven mvn test
                         '''
                     }
                     post {
