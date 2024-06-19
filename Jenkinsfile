@@ -6,12 +6,24 @@ pipeline {
 				stage('Deploy') {
 					agent any
 					steps {
-						sh 'chmod +x ./jenkins/script/deploy.sh'
-						sh 'chmod +x ./jenkins/script/kill.sh'
-						sh './jenkins/scripts/deploy.sh'
-						input message: 'Finished using the web site? (Click "Proceed" to continue)'
-						sh './jenkins/scripts/kill.sh'
-					}
+                        // Run the Docker container for the PHP application
+                        docker.build('my-apache-php-app', '-f /home/user/Desktop/LAB7B/jenkins-php-selenium-test/Dockerfile .').inside {
+                            sh '''
+                            docker run -d -p 80:80 --name my-apache-php-app -v /home/user/Desktop/LAB7B/jenkins-php-selenium-test/src:/var/www/html php:7.2-apache
+                            sleep 1
+                            echo 'Now...'
+                            echo 'Visit http://localhost to see your PHP application in action.'
+                            '''
+                        }
+                        input message: 'Finished using the website? (Click "Proceed" to continue)'
+                        // Stop and remove the Docker container
+                        docker.build('my-apache-php-app').inside {
+                            sh '''
+                            docker kill my-apache-php-app
+                            docker rm my-apache-php-app
+                            '''
+                        }
+                    }
 				}
 				stage('Headless Browser Test') {
 					agent {
