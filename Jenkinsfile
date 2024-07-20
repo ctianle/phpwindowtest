@@ -14,7 +14,7 @@ pipeline {
                 stage('Headless Browser Test') {
                     agent { // Agent make it such that the 'sh' command in steps and post will be entered into maven container.
                         docker {
-                            image 'arm64v8/maven'
+                            image 'maven:3-alpine'
                             args '-v /root/.m2:/root/.m2' // Mount to cache Maven dependencies to between builds to speed up the build process.
                         }
                     }
